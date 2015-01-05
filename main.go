@@ -148,11 +148,19 @@ func handleKnownAddresses(rpcClient *btcrpcclient.Client, knownAddresses btcP2P.
 	writeStats(numberStrats, knownAddresses, rpcPeers, "number")
 	writeStats(timeStrats, knownAddresses, rpcPeers, "time")
 
-	fmt.Printf("completed round ")
-	<-time.After(1 * time.Minute)
+	log.Printf("completed round")
+	<-time.After(30 * time.Minute)
 }
 
 func main() {
+	f, err := os.OpenFile("debug.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
+	log.SetOutput(f)
+
 	// connect to node via rpc
 	rpcClient, err := btcrpcclient.New(connCfg, nil)
 	if err != nil {
@@ -171,7 +179,6 @@ func main() {
 			handleKnownAddresses(rpcClient, knownAddresses)
 		case peerState := <-stateResultChan:
 			_, state := peerState.Get()
-			fmt.Println("foo", state)
 			switch state.(type) {
 			case *btcP2P.StateDisconnected:
 				peer = p2pConnect(stateResultChan)

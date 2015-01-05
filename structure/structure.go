@@ -20,7 +20,7 @@ type NetAddressSlice btcP2P.NetAddressSlice
 // TODO: optimize by sending multiple getaddr requests at once
 func KnownAddresses(peer *btcP2P.Peer) chan btcP2P.NetAddressSlice {
 	// what is the percentage of known nodes we want to get
-	aimPercentageKnown := float32(0.1)
+	aimPercentageKnown := float32(0.95)
 
 	retChan := make(chan btcP2P.NetAddressSlice)
 
