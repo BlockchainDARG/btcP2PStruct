@@ -103,7 +103,7 @@ func logSomeAddresses(knownAddresses btcP2P.NetAddressSlice, rpcPeers *set.Set) 
 	}
 	log.Println(str)
 	str = "rpc peers: "
-	for addr := range set.StringSlice(rpcPeers) {
+	for _, addr := range set.StringSlice(rpcPeers) {
 		str += fmt.Sprintf("%s, ", addr)
 	}
 	log.Println(str)
