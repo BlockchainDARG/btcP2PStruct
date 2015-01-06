@@ -95,6 +95,7 @@ func p2pConnect(stateResultChan chan *btcP2P.PeerState) *btcP2P.Peer {
 
 func logSomeAddresses(knownAddresses btcP2P.NetAddressSlice, rpcPeers *set.Set) {
 	some := 25
+
 	str := ""
 	str += "known addresses: "
 	for i := len(knownAddresses) - some - 1; i < len(knownAddresses); i++ {
@@ -102,8 +103,25 @@ func logSomeAddresses(knownAddresses btcP2P.NetAddressSlice, rpcPeers *set.Set) 
 		str += fmt.Sprintf("%s:%d (%v),", addr.IP, addr.Port, addr.Timestamp)
 	}
 	log.Println(str)
+
 	str = "rpc peers: "
 	for _, addr := range set.StringSlice(rpcPeers) {
+		str += fmt.Sprintf("%s, ", addr)
+	}
+	log.Println(str)
+
+	strat := structure.MakeKnownAddressNumberStrat(15)
+	selected := strat.F(knownAddresses)
+	tp := set.Intersection(selected, rpcPeers)
+	str = "true positives: "
+	for _, addr := range set.StringSlice(tp) {
+		str += fmt.Sprintf("%s, ", addr)
+	}
+	log.Println(str)
+
+	fn := set.Difference(rpcPeers, selected)
+	str = "false negatives: "
+	for _, addr := range set.StringSlice(fn) {
 		str += fmt.Sprintf("%s, ", addr)
 	}
 	log.Println(str)
@@ -128,7 +146,7 @@ func writeStats(strats []*structure.KnownAddressStrat, knownAddresses btcP2P.Net
 	}
 
 	for i, s := range stats {
-		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn, s.NumKnownPeers))
+		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn))
 		if err != nil {
 			log.Fatal(err)
 		}
