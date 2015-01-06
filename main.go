@@ -45,7 +45,7 @@ type Stat struct {
 	Fp int
 	Fn int
 	// numRpcPeers = tp + fn
-	numKnownNodes int
+	NumKnownPeers int
 }
 
 func (s *Stat) precision() float64 {
@@ -93,6 +93,22 @@ func p2pConnect(stateResultChan chan *btcP2P.PeerState) *btcP2P.Peer {
 	return peer
 }
 
+func logSomeAddresses(knownAddresses btcP2P.NetAddressSlice, rpcPeers *set.Set) {
+	some := 25
+	str := ""
+	str += "known addresses: "
+	for i := len(knownAddresses) - some - 1; i < len(knownAddresses); i++ {
+		addr := knownAddresses[i]
+		str += fmt.Sprintf("%s:%d (%v),", addr.IP, addr.Port, addr.Timestamp)
+	}
+	log.Println(str)
+	str = "rpc peers: "
+	for addr := range set.StringSlice(rpcPeers) {
+		str += fmt.Sprintf("%s, ", addr)
+	}
+	log.Println(str)
+}
+
 func writeStats(strats []*structure.KnownAddressStrat, knownAddresses btcP2P.NetAddressSlice, rpcPeers *set.Set, suffix string) {
 	stats := knownAddressStatistics(strats, knownAddresses, rpcPeers)
 
@@ -106,13 +122,13 @@ func writeStats(strats []*structure.KnownAddressStrat, knownAddresses btcP2P.Net
 		log.Fatal(err)
 	}
 	defer f.Close()
-	_, err = f.WriteString("threshold, tp, fp, fn\n")
+	_, err = f.WriteString("threshold, tp, fp, fn, numKnownPeers\n")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for i, s := range stats {
-		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn))
+		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn, s.NumKnownPeers))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -149,7 +165,8 @@ func handleKnownAddresses(rpcClient *btcrpcclient.Client, knownAddresses btcP2P.
 	writeStats(timeStrats, knownAddresses, rpcPeers, "time")
 
 	log.Printf("completed round")
-	<-time.After(30 * time.Minute)
+	logSomeAddresses(knownAddresses, rpcPeers)
+	<-time.After(60 * time.Minute)
 }
 
 func main() {
