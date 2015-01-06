@@ -63,7 +63,7 @@ func selectUntil(s btcP2P.NetAddressSlice, t time.Time) *set.Set {
 	ret := set.New()
 	for i := len(s) - 1; i >= 0; i-- {
 		if s[i].Timestamp.After(t) {
-			ret.Add(btcP2P.AddrToString(s[i]))
+			ret.Add(fmt.Sprintf("%s", s[i].IP))
 		} else {
 			break
 		}
@@ -94,7 +94,7 @@ func MakeKnownAddressNumberStrat(n int) *KnownAddressStrat {
 		knownAddressesSlice := knownAddresses[len(knownAddresses)-n : len(knownAddresses)]
 		ret := set.New()
 		for _, addr := range knownAddressesSlice {
-			ret.Add(btcP2P.AddrToString(addr))
+			ret.Add(fmt.Sprintf("%s", addr.IP))
 		}
 		return ret
 	}, fmt.Sprintf("%d", n)}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/conformal/btcrpcclient"
@@ -160,7 +161,7 @@ func handleKnownAddresses(rpcClient *btcrpcclient.Client, knownAddresses btcP2P.
 	}
 	rpcPeers := set.New()
 	for _, peerInfo := range peerInfos {
-		rpcPeers.Add(peerInfo.Addr)
+		rpcPeers.Add(strings.Split(peerInfo.Addr, ":")[0])
 	}
 
 	numberStrats := make([]*structure.KnownAddressStrat, 0)
