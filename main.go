@@ -141,7 +141,7 @@ func writeStats(strats []*structure.KnownAddressStrat, knownAddresses btcP2P.Net
 		log.Fatal(err)
 	}
 	defer f.Close()
-	_, err = f.WriteString("threshold, tp, fp, fn, numKnownPeers\n")
+	_, err = f.WriteString("threshold, tp, fp, fn\n")
 	if err != nil {
 		log.Fatal(err)
 	}
