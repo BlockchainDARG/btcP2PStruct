@@ -46,7 +46,7 @@ type Stat struct {
 	Fp int
 	Fn int
 	// numRpcPeers = tp + fn
-	NumKnownPeers int
+	NumKnownAddresses int
 }
 
 func (s *Stat) precision() float64 {
@@ -141,13 +141,13 @@ func writeStats(strats []*structure.KnownAddressStrat, knownAddresses btcP2P.Net
 		log.Fatal(err)
 	}
 	defer f.Close()
-	_, err = f.WriteString("threshold, tp, fp, fn\n")
+	_, err = f.WriteString("threshold, tp, fp, fn, numKnownAddresses\n")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for i, s := range stats {
-		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn))
+		_, err := f.WriteString(fmt.Sprintf("%s, %d, %d, %d, %d\n", strats[i].Name, s.Tp, s.Fp, s.Fn, s.NumKnownAddresses))
 		if err != nil {
 			log.Fatal(err)
 		}
