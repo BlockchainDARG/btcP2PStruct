@@ -32,20 +32,23 @@ plot <- function(data) {
   g <- guide_legend(title="is peer?")
   
   m <- ggplot(edata, aes(x=edata$time, fill=edata$isNotPeer))
-  m + geom_bar(binwidth=10) #+ geom_bar(binwidth=10, colour="#666666", show_guide=FALSE) 
-#     coord_cartesian(ylim=c(0,20)) + 
-#     xlab("now - timestamp (in minutes)") +
-#    ggtitle("Typical getaddr timestamps") +
-#   scale_fill_discrete(name="Is peer?", labels=c("T", "F")) +
-#   scale_x_continuous(breaks=number_ticks(8), limits=c(0, 140))
-}  
+  m + geom_bar(binwidth=10) + geom_bar(binwidth=10, colour="#666666", show_guide=FALSE) +
+     coord_cartesian(ylim=c(0,20)) + 
+     xlab("now - timestamp (in minutes)") +
+    ggtitle("Typical getaddr timestamps") +
+   scale_fill_discrete(name="Is peer?", labels=c("T", "F")) +
+   scale_x_continuous(breaks=number_ticks(8), limits=c(0, 140))+ 
+    theme(axis.text = element_text(size = 25))  + 
+  theme(axis.title = element_text(size = 25))  + 
+  theme(text = element_text(size = 25))  
+}
 
 data <- read.csv("../data/full_node/2015-01-14_15:03:28_time.csv")
-#png('full_node-histogram.png')
+png('full_node-histogram.png', width=1024)
 plot(data)
-#dev.off()
+dev.off()
 
-#data <- read.csv("../data/client/2015-01-14_15:50:51_time.csv")
-#png('client-histogram.png')
-#plot(data)
-#dev.off()
+data <- read.csv("../data/client/2015-01-14_15:50:51_time.csv")
+png('client-histogram.png')
+plot(data)
+dev.off()
